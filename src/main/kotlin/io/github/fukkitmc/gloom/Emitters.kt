@@ -28,7 +28,7 @@ import java.util.function.Function
 class EmitterProvider<E : Emitter>(private val provider: Function<String, E>) {
     val emitters = mutableMapOf<String, E>()
 
-    operator fun get(clazz: String): Emitter {
+    operator fun get(clazz: String): E {
         return emitters.computeIfAbsent(clazz, provider)
     }
 }

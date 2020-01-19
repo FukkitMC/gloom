@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.fukkitmc"
-version = "1.0.0"
+version = "1.0.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,9 +19,8 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-runtime", "0.14.0")
-
+    api(kotlin("stdlib-jdk8"))
+    api("org.jetbrains.kotlinx", "kotlinx-serialization-runtime", "0.14.0")
     api("org.ow2.asm", "asm", "7.3.1")
 }
 

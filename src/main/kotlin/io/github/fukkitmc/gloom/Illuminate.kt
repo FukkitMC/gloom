@@ -41,7 +41,7 @@ private class IlluminateAccessVisitor(visitor: MethodVisitor, private val illumi
         val isStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC
         val isPut = opcode == Opcodes.PUTSTATIC || opcode == Opcodes.PUTFIELD
         val member = Member(definition.type, name, descriptor)
-        val publicize: Boolean = definition.publicizedFields.contains(member)
+        val publicize = definition.publicizedFields.contains(member)
         val mutate = isPut && !isStatic && definition.publicizedFields.contains(member)
 
         if (publicize && !mutate) {

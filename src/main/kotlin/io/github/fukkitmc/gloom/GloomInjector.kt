@@ -26,7 +26,7 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
 
     override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?, interfaces: Array<out String>?) {
         owner = name
-        type = Type.getType(name)
+        type = Type.getObjectType(name)
         definition = definitions[name]
 
         super.visit(version, access, name, signature, superName, interfaces)
@@ -34,7 +34,7 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
 
     override fun visitInnerClass(name: String, outerName: String?, innerName: String?, access: Int) {
         owner = name
-        type = Type.getType(name)
+        type = Type.getObjectType(name)
         definition = definitions[name]
 
         super.visitInnerClass(name, outerName, innerName, access)

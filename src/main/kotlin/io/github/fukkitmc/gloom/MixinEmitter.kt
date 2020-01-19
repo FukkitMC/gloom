@@ -78,7 +78,7 @@ open class MixinEmitter(private val name: String, private val mixin: String, ove
 
         writeConstructor(visitor, Opcodes.ACC_PUBLIC)
 
-        val fields: MutableSet<SyntheticField> = HashSet()
+        val fields = mutableSetOf<SyntheticField>()
 
         interfaceGets.forEach { (field, name) ->
             fields.add(field)
