@@ -99,8 +99,7 @@ private class IlluminateSyntheticVisitor(visitor: MethodVisitor, private val ill
 
     override fun visitFieldInsn(opcode: Int, owner: String, name: String, descriptor: String) {
         val field = illuminate.definitions[owner]?.getSyntheticField(name, descriptor)
-                ?: super.visitFieldInsn(opcode, owner, name, descriptor)
-        field as SyntheticField
+                ?: return super.visitFieldInsn(opcode, owner, name, descriptor)
 
         val emitter = illuminate.provider[owner]
         val isStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC

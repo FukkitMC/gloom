@@ -17,13 +17,14 @@
 package io.github.fukkitmc.gloom
 
 import kotlinx.serialization.*
+import kotlinx.serialization.internal.HashSetSerializer
 import kotlinx.serialization.internal.StringDescriptor
 import kotlinx.serialization.json.Json
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 
 @Serializer(forClass = Type::class)
-object TypeSerializer: KSerializer<Type> {
+object TypeSerializer : KSerializer<Type> {
     override val descriptor: SerialDescriptor = StringDescriptor
 
     override fun deserialize(decoder: Decoder): Type = Type.getType(decoder.decodeString())
@@ -168,9 +169,9 @@ data class SyntheticMethod(val opcode: Int, val name: String, val descriptor: St
 data class Accessor(val access: Int, @Serializable(with = TypeSerializer::class) val type: Type, val name: String)
 
 fun fromString(string: String): GloomDefinitions {
-    return Json.parse(GloomDefinitions.serializer(), string)
+    return GloomDefinitions(Json.parse(HashSetSerializer(ClassDefinition.serializer()), string).map { it.type.internalName to it }.toMap())
 }
 
 fun toString(definitions: GloomDefinitions): String {
-    return Json.stringify(GloomDefinitions.serializer(), definitions)
+    return Json.stringify(HashSetSerializer(ClassDefinition.serializer()), definitions.definitions.values.toHashSet())
 }

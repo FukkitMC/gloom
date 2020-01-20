@@ -136,7 +136,7 @@ data class Pair(val name: String, val desc: String)
  * Provides a base for emitters to be implemented. Keeps track of
  * already generated members so an implementation may generate code
  */
-abstract class AbstractEmitter: Emitter {
+abstract class AbstractEmitter : Emitter {
 
     protected val accessorSets = mutableMapOf<Pair, String>()
     protected val accessorGets = mutableMapOf<Pair, String>()

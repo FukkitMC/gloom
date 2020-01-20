@@ -18,7 +18,7 @@ package io.github.fukkitmc.gloom
 
 import org.objectweb.asm.*
 
-class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefinitions): ClassVisitor(Opcodes.ASM7, visitor) {
+class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefinitions) : ClassVisitor(Opcodes.ASM7, visitor) {
 
     private lateinit var owner: String
     private lateinit var type: Type
@@ -33,11 +33,13 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
     }
 
     override fun visitField(access: Int, name: String, descriptor: String, signature: String?, value: Any?): FieldVisitor? {
-        return super.visitField(definition?.getFieldAccess(Member(type, name, descriptor), access) ?: access, name, descriptor, signature, value)
+        return super.visitField(definition?.getFieldAccess(Member(type, name, descriptor), access)
+                ?: access, name, descriptor, signature, value)
     }
 
     override fun visitMethod(access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?): MethodVisitor? {
-        return super.visitMethod(definition?.getMethodAccess(Member(type, name, descriptor), access) ?: access, name, descriptor, signature, exceptions)
+        return super.visitMethod(definition?.getMethodAccess(Member(type, name, descriptor), access)
+                ?: access, name, descriptor, signature, exceptions)
     }
 
     override fun visitEnd() {

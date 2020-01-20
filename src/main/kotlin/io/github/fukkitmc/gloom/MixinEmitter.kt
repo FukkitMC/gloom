@@ -20,7 +20,6 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
-import java.util.*
 
 open class MixinEmitter(private val name: String, private val mixin: String, override val holder: String, override val `interface`: String, override val accessor: String) : AbstractEmitter() {
 
