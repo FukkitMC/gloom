@@ -21,7 +21,7 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 
-open class MixinEmitter(private val name: String, private val mixin: String, override val holder: String, override val `interface`: String, override val accessor: String) : AbstractEmitter() {
+open class MixinEmitter(private val name: String, val mixin: String, override val holder: String, override val `interface`: String, override val accessor: String) : AbstractEmitter() {
 
     /**
      * Maps the field name for mutable setter fields
