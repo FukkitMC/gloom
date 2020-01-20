@@ -32,14 +32,6 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
         super.visit(version, access, name, signature, superName, interfaces)
     }
 
-    override fun visitInnerClass(name: String, outerName: String?, innerName: String?, access: Int) {
-        owner = name
-        type = Type.getObjectType(name)
-        definition = definitions[name]
-
-        super.visitInnerClass(name, outerName, innerName, access)
-    }
-
     override fun visitField(access: Int, name: String, descriptor: String, signature: String?, value: Any?): FieldVisitor? {
         return super.visitField(definition?.getFieldAccess(Member(type, name, descriptor), access) ?: access, name, descriptor, signature, value)
     }
