@@ -50,11 +50,11 @@ data class GloomDefinitions(val definitions: Map<String, ClassDefinition>) {
 @Serializable
 data class ClassDefinition(
         @Serializable(with = TypeSerializer::class) val type: Type,
-        val publicizedFields: Set<Member>,
-        val publicizedMethods: Set<Member>,
-        val mutableFields: Set<Member>,
-        val syntheticFields: Set<SyntheticField>,
-        val syntheticMethods: Set<SyntheticMethod>
+        val publicizedFields: Set<Member> = setOf(),
+        val publicizedMethods: Set<Member> = setOf(),
+        val mutableFields: Set<Member> = setOf(),
+        val syntheticFields: Set<SyntheticField> = setOf(),
+        val syntheticMethods: Set<SyntheticMethod> = setOf()
 ) {
 
     init {
@@ -160,7 +160,7 @@ data class ClassDefinition(
 
 
 @Serializable
-data class SyntheticField(val name: String, @Serializable(with = TypeSerializer::class) val type: Type, val access: Int, val getter: Accessor?, val setter: Accessor?)
+data class SyntheticField(val name: String, @Serializable(with = TypeSerializer::class) val type: Type, val access: Int, val getter: Accessor? = null, val setter: Accessor? = null)
 
 @Serializable
 data class SyntheticMethod(val opcode: Int, val name: String, val descriptor: String, val access: Int, val redirect: Member)
