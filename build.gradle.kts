@@ -7,12 +7,7 @@ plugins {
 }
 
 group = "io.github.fukkitmc"
-version = "1.0.5"
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+version = "1.0.6"
 
 repositories {
     jcenter()
@@ -44,7 +39,7 @@ publishing {
     publications {
         register("mavenJava", MavenPublication::class) {
             from(components["java"])
-            artifact(sourcesJar.get())
+            artifact(tasks["sourcesJar"])
         }
     }
 }

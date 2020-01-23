@@ -160,13 +160,13 @@ data class ClassDefinition(
 
 
 @Serializable
-data class SyntheticField(val name: String, @Serializable(with = TypeSerializer::class) val type: Type, val access: Int, val getter: Accessor? = null, val setter: Accessor? = null)
+data class SyntheticField(val name: String, @Serializable(with = TypeSerializer::class) val type: Type, val signature: String? = null, val access: Int, val getter: Accessor? = null, val setter: Accessor? = null)
 
 @Serializable
-data class SyntheticMethod(val opcode: Int, val name: String, val descriptor: String, val access: Int, val redirect: Member)
+data class SyntheticMethod(val opcode: Int, val name: String, val descriptor: String, val signature: String? = null, val access: Int, val redirect: Member)
 
 @Serializable
-data class Accessor(val access: Int, @Serializable(with = TypeSerializer::class) val type: Type, val name: String)
+data class Accessor(val access: Int, @Serializable(with = TypeSerializer::class) val type: Type, val name: String, val signature: String? = null)
 
 fun fromString(string: String): GloomDefinitions {
     return GloomDefinitions(Json.parse(HashSetSerializer(ClassDefinition.serializer()), string).map { it.type.internalName to it }.toMap())

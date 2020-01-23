@@ -55,11 +55,11 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
     private fun finish() {
         val definition = definition ?: return
 
-        for ((name, type, access, getter, setter) in definition.syntheticFields) {
-            super.visitField(access, name, type.descriptor, null, null).visitEnd()
+        for ((name, type, signature, access, getter, setter) in definition.syntheticFields) {
+            super.visitField(access, name, type.descriptor, signature, null).visitEnd()
 
-            getter?.let { (a, t, n) ->
-                val visitor = super.visitMethod(a, n, Type.getMethodDescriptor(t), null, null)
+            getter?.let { (a, t, n, s) ->
+                val visitor = super.visitMethod(a, n, Type.getMethodDescriptor(t), s, null)
 
                 if (visitor != null) {
                     visitor.visitCode()
@@ -76,8 +76,8 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
                 }
             }
 
-            setter?.let { (a, t, n) ->
-                val visitor = super.visitMethod(a, n, Type.getMethodDescriptor(Type.VOID_TYPE, t), null, null)
+            setter?.let { (a, t, n, s) ->
+                val visitor = super.visitMethod(a, n, Type.getMethodDescriptor(Type.VOID_TYPE, t), s, null)
 
                 if (visitor != null) {
                     visitor.visitCode()
@@ -96,8 +96,8 @@ class GloomInjector(visitor: ClassVisitor?, private val definitions: GloomDefini
             }
         }
 
-        for ((opcode, name, descriptor, access, redirect) in definition.syntheticMethods) {
-            val visitor = super.visitMethod(access, name, descriptor, null, null)
+        for ((opcode, name, descriptor, signature, access, redirect) in definition.syntheticMethods) {
+            val visitor = super.visitMethod(access, name, descriptor, signature, null)
 
             if (visitor != null) {
                 visitor.visitCode()
