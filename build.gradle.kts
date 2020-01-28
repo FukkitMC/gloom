@@ -1,26 +1,17 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
+    `java-library`
     `maven-publish`
-    kotlin("jvm") version "1.3.61"
-    kotlin("plugin.serialization") version "1.3.61"
 }
 
 group = "io.github.fukkitmc"
-version = "1.0.6"
+version = "2.0.0"
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx", "kotlinx-serialization-runtime", "0.14.0")
     api("org.ow2.asm", "asm", "7.3.1")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
 }
 
 val sourcesJar by tasks.registering(Jar::class) {
