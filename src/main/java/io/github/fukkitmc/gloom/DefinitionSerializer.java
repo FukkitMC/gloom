@@ -22,6 +22,7 @@ import io.github.fukkitmc.gloom.definitions.ClassDefinition;
 import io.github.fukkitmc.gloom.definitions.GloomDefinitions;
 import org.objectweb.asm.Type;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,6 +32,7 @@ public class DefinitionSerializer {
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Type.class, new TypeSerializer())
+            .registerTypeAdapter(ClassDefinition.class, new ClassDefinitionInstanceCreator())
             .setPrettyPrinting()
             .create();
     private static final java.lang.reflect.Type CLASS_SET = new TypeToken<Set<ClassDefinition>>() {}.getType();
@@ -52,6 +54,13 @@ public class DefinitionSerializer {
         @Override
         public Type deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Type.getType(json.getAsString());
+        }
+    }
+
+    private static class ClassDefinitionInstanceCreator implements InstanceCreator<ClassDefinition> {
+        @Override
+        public ClassDefinition createInstance(java.lang.reflect.Type type) {
+            return new ClassDefinition(null, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
         }
     }
 }
