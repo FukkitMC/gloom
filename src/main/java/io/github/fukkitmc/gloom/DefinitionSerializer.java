@@ -18,8 +18,8 @@ package io.github.fukkitmc.gloom;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import io.github.fukkitmc.gloom.definitions.ClassDefinition;
-import io.github.fukkitmc.gloom.definitions.GloomDefinitions;
+import io.github.fukkitmc.gloom.definitions.*;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import java.util.HashSet;
@@ -33,9 +33,13 @@ public class DefinitionSerializer {
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Type.class, new TypeSerializer())
             .registerTypeAdapter(ClassDefinition.class, new ClassDefinitionInstanceCreator())
+            .registerTypeAdapter(SyntheticField.class, new SyntheticFieldInstanceCreator())
+            .registerTypeAdapter(SyntheticMethod.class, new SyntheticMethodInstanceCreator())
+            .registerTypeAdapter(SelfMember.class, new SelfMemberDeserializer())
             .setPrettyPrinting()
             .create();
-    private static final java.lang.reflect.Type CLASS_SET = new TypeToken<Set<ClassDefinition>>() {}.getType();
+    private static final java.lang.reflect.Type CLASS_SET = new TypeToken<Set<ClassDefinition>>() {
+    }.getType();
 
     public static String toString(GloomDefinitions definitions) {
         return GSON.toJson(definitions.getDefinitions());
@@ -61,6 +65,47 @@ public class DefinitionSerializer {
         @Override
         public ClassDefinition createInstance(java.lang.reflect.Type type) {
             return new ClassDefinition(null, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
+        }
+    }
+
+    private static class SyntheticFieldInstanceCreator implements InstanceCreator<SyntheticField> {
+        @Override
+        public SyntheticField createInstance(java.lang.reflect.Type type) {
+            return new SyntheticField(Opcodes.ACC_PUBLIC, null, null, null, null, null);
+        }
+    }
+
+    private static class SyntheticMethodInstanceCreator implements InstanceCreator<SyntheticMethod> {
+        @Override
+        public SyntheticMethod createInstance(java.lang.reflect.Type type) {
+            return new SyntheticMethod(Opcodes.INVOKESTATIC, Opcodes.ACC_PUBLIC, null, null, null, null);
+        }
+    }
+
+    private static class SelfMemberDeserializer implements JsonDeserializer<SelfMember> {
+        @Override
+        public SelfMember deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonPrimitive()) {
+                String string = json.getAsString();
+
+                if (string.contains(":")) {
+                    String[] parts = string.split(":");
+                    return new SelfMember(parts[0], parts[1]);
+                } else if (string.contains("(")) {
+                    int index = string.indexOf('(');
+                    return new SelfMember(string.substring(0, index), string.substring(index));
+                }
+
+                throw new JsonParseException("Unknown descriptor");
+            } else if (json.isJsonArray()) {
+                JsonArray array = json.getAsJsonArray();
+                return new SelfMember(array.get(0).getAsString(), array.get(1).getAsString());
+            } else if (json.isJsonObject()) {
+                JsonObject object = json.getAsJsonObject();
+                return new SelfMember(object.getAsJsonPrimitive("name").getAsString(), object.getAsJsonPrimitive("descriptor").getAsString());
+            }
+
+            throw new JsonParseException("Unknown element");
         }
     }
 }

@@ -16,10 +16,7 @@
 
 package io.github.fukkitmc.gloom.definitions;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,6 +37,34 @@ public class GloomDefinitions {
 
     public ClassDefinition get(String name) {
         return definitions.get(name);
+    }
+
+    public GloomDefinitions merge(ClassDefinition definition) {
+        Set<ClassDefinition> definitions = new HashSet<>(getDefinitions());
+        ClassDefinition existing = get(definition.getName());
+
+        if (existing == null) {
+            definitions.add(definition);
+        } else {
+            Set<String> iI = new HashSet<>(existing.getInjectInterfaces());
+            Set<SelfMember> pF = new HashSet<>(existing.getPublicizedFields());
+            Set<SelfMember> pM = new HashSet<>(existing.getPublicizedMethods());
+            Set<SelfMember> mF = new HashSet<>(existing.getMutableFields());
+            Set<SyntheticField> sF = new HashSet<>(existing.getSyntheticFields());
+            Set<SyntheticMethod> sM = new HashSet<>(existing.getSyntheticMethods());
+
+            iI.addAll(definition.getInjectInterfaces());
+            pF.addAll(definition.getPublicizedFields());
+            pM.addAll(definition.getPublicizedMethods());
+            mF.addAll(definition.getMutableFields());
+            sF.addAll(definition.getSyntheticFields());
+            sM.addAll(definition.getSyntheticMethods());
+
+            definitions.remove(existing);
+            definitions.add(new ClassDefinition(definition.getName(), iI, pF, pM, mF, sF, sM));
+        }
+
+        return new GloomDefinitions(definitions);
     }
 
     @Override
