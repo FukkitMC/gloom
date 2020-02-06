@@ -19,7 +19,9 @@ package io.github.fukkitmc.gloom.asm;
 import io.github.fukkitmc.gloom.definitions.*;
 import org.objectweb.asm.*;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Injects {@link GloomDefinitions definitions} into classes
@@ -47,10 +49,7 @@ public class GloomInjector extends ClassVisitor {
                 if (interfaces == null) {
                     interfaces = i;
                 } else {
-                    String[] copy = interfaces;
-                    interfaces = new String[interfaces.length + i.length];
-                    System.arraycopy(copy, 0, interfaces, 0, interfaces.length);
-                    System.arraycopy(i, 0, interfaces, interfaces.length, i.length);
+                    interfaces = Stream.concat(Arrays.stream(interfaces), Arrays.stream(i)).toArray(String[]::new);
                 }
             }
         }
