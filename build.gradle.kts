@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.fukkitmc"
-version = "2.0.4"
+version = "2.0.5"
 
 repositories {
     jcenter()

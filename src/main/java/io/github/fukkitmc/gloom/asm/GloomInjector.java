@@ -132,7 +132,8 @@ public class GloomInjector extends ClassVisitor {
                 }
 
                 for (Type argument : Type.getArgumentTypes(method.getDescriptor())) {
-                    visitor.visitVarInsn(argument.getOpcode(Opcodes.ILOAD), counter++);
+                    visitor.visitVarInsn(argument.getOpcode(Opcodes.ILOAD), counter);
+                    counter += argument.getSize();
                 }
 
                 visitor.visitMethodInsn(method.getOpcode(), redirect.getOwner(), redirect.getName(), redirect.getDescriptor(), redirect.isInterface());
