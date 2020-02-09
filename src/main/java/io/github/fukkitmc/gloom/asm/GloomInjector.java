@@ -51,6 +51,12 @@ public class GloomInjector extends ClassVisitor {
                 } else {
                     interfaces = Stream.concat(Arrays.stream(interfaces), Arrays.stream(i)).toArray(String[]::new);
                 }
+
+                if (signature != null) {
+                    for (String itf : i) {
+                        signature += "L" + itf + ";";
+                    }
+                }
             }
         }
 
