@@ -138,6 +138,7 @@ public class GloomInjector extends ClassVisitor {
             }
 
             for (SyntheticMethod method : definition.getSyntheticMethods()) {
+                Type returnType = Type.getReturnType(method.getDescriptor());
                 RedirectTarget redirect = method.getRedirect();
 
                 MethodVisitor visitor = super.visitMethod(method.getAccess(), method.getName(), method.getDescriptor(), method.getSignature(), null);
@@ -154,8 +155,10 @@ public class GloomInjector extends ClassVisitor {
                     counter += argument.getSize();
                 }
 
+                counter += returnType.getSize();
+
                 visitor.visitMethodInsn(method.getOpcode(), redirect.getOwner(), redirect.getName(), redirect.getDescriptor(), redirect.isInterface());
-                visitor.visitInsn(Type.getReturnType(method.getDescriptor()).getOpcode(Opcodes.IRETURN));
+                visitor.visitInsn(returnType.getOpcode(Opcodes.IRETURN));
                 visitor.visitMaxs(counter, counter);
                 visitor.visitEnd();
             }
