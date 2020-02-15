@@ -92,11 +92,13 @@ public class GloomInjector extends ClassVisitor {
 
                 if (getter != null) {
                     int access = getter.getAccess();
+                    boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
+
                     // TODO: These can be null
                     MethodVisitor visitor = super.visitMethod(access, getter.getName(), Type.getMethodDescriptor(getter.getType()), getter.getSignature(), null);
                     visitor.visitCode();
 
-                    if ((access & Opcodes.ACC_STATIC) != 0) {
+                    if (isStatic) {
                         visitor.visitFieldInsn(Opcodes.GETSTATIC, definition.getName(), field.getName(), field.getType().getDescriptor());
                     } else {
                         visitor.visitVarInsn(Opcodes.ALOAD, 0);
@@ -104,15 +106,18 @@ public class GloomInjector extends ClassVisitor {
                     }
 
                     visitor.visitInsn(getter.getType().getOpcode(Opcodes.IRETURN));
+                    visitor.visitMaxs(1, isStatic ? 0 : 1);
                     visitor.visitEnd();
                 }
 
                 if (setter != null) {
                     int access = setter.getAccess();
+                    boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
+
                     MethodVisitor visitor = super.visitMethod(access, setter.getName(), Type.getMethodDescriptor(Type.VOID_TYPE, setter.getType()), setter.getSignature(), null);
                     visitor.visitCode();
 
-                    if ((access & Opcodes.ACC_STATIC) != 0) {
+                    if (isStatic) {
                         visitor.visitVarInsn(setter.getType().getOpcode(Opcodes.ILOAD), 0);
                     } else {
                         visitor.visitVarInsn(Opcodes.ALOAD, 0);
@@ -121,6 +126,13 @@ public class GloomInjector extends ClassVisitor {
 
                     visitor.visitFieldInsn((field.getAccess() & Opcodes.ACC_STATIC) != 0 ? Opcodes.PUTSTATIC : Opcodes.PUTFIELD, definition.getName(), field.getName(), field.getType().getDescriptor());
                     visitor.visitInsn(Opcodes.RETURN);
+
+                    if (isStatic) {
+                        visitor.visitMaxs(1, 1);
+                    } else {
+                        visitor.visitMaxs(2, 2);
+                    }
+
                     visitor.visitEnd();
                 }
             }
@@ -144,6 +156,7 @@ public class GloomInjector extends ClassVisitor {
 
                 visitor.visitMethodInsn(method.getOpcode(), redirect.getOwner(), redirect.getName(), redirect.getDescriptor(), redirect.isInterface());
                 visitor.visitInsn(Type.getReturnType(method.getDescriptor()).getOpcode(Opcodes.IRETURN));
+                visitor.visitMaxs(counter, counter);
                 visitor.visitEnd();
             }
         }
