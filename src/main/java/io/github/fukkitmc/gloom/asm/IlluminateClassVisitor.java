@@ -25,7 +25,7 @@ public class IlluminateClassVisitor extends ClassVisitor {
     private final Illuminate illuminate;
 
     IlluminateClassVisitor(ClassVisitor visitor, Illuminate illuminate) {
-        super(Opcodes.ASM7, visitor);
+        super(Opcodes.ASM8, visitor);
         this.illuminate = illuminate;
     }
 

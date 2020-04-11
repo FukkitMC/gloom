@@ -4,14 +4,14 @@ plugins {
 }
 
 group = "io.github.fukkitmc"
-version = "2.0.7"
+version = "2.0.8"
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    api("org.ow2.asm", "asm", "7.3.1")
+    api("org.ow2.asm", "asm", "8.0.1")
     compileOnly("com.google.code.gson", "gson", "2.8.6")
 }
 

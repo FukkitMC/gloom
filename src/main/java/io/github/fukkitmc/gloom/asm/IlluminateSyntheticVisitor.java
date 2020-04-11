@@ -30,7 +30,7 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
     private final Illuminate illuminate;
 
     IlluminateSyntheticVisitor(MethodVisitor visitor, Illuminate illuminate) {
-        super(Opcodes.ASM7, visitor);
+        super(Opcodes.ASM8, visitor);
         this.illuminate = illuminate;
     }
 

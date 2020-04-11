@@ -34,8 +34,15 @@ public class EmitterProvider<E extends Emitter> {
         this.provider = provider;
     }
 
-    public Emitter forClass(String name) {
-        return emitters.computeIfAbsent(name, provider);
+    public E forClass(String name) {
+        // Don't use computeIfAbsent, causes a ConcurrentModificationException
+        E emitter = emitters.get(name);
+
+        if (emitter == null) {
+            emitters.put(name, emitter = provider.apply(name));
+        }
+
+        return emitter;
     }
 
     public Map<String, E> getEmitters() {

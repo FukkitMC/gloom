@@ -27,7 +27,7 @@ class IlluminateAccessVisitor extends MethodVisitor {
     private final Illuminate illuminate;
 
     IlluminateAccessVisitor(MethodVisitor visitor, Illuminate illuminate) {
-        super(Opcodes.ASM7, visitor);
+        super(Opcodes.ASM8, visitor);
         this.illuminate = illuminate;
     }
 

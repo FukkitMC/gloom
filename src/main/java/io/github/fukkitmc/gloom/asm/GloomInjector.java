@@ -32,7 +32,7 @@ public class GloomInjector extends ClassVisitor {
     private ClassDefinition definition;
 
     public GloomInjector(ClassVisitor delegate, GloomDefinitions definitions) {
-        super(Opcodes.ASM7, delegate);
+        super(Opcodes.ASM8, delegate);
         this.definitions = definitions;
     }
 
