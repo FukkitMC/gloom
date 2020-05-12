@@ -16,8 +16,6 @@
 
 package io.github.fukkitmc.gloom.definitions;
 
-import org.objectweb.asm.Opcodes;
-
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,19 +25,11 @@ import java.util.Set;
 public class ClassDefinition {
 
     private final String name;
-    private final Set<String> injectInterfaces;
-    private final Set<SelfMember> publicizedFields;
-    private final Set<SelfMember> publicizedMethods;
-    private final Set<SelfMember> mutableFields;
     private final Set<SyntheticField> syntheticFields;
     private final Set<SyntheticMethod> syntheticMethods;
 
-    public ClassDefinition(String name, Set<String> injectInterfaces, Set<SelfMember> publicizedFields, Set<SelfMember> publicizedMethods, Set<SelfMember> mutableFields, Set<SyntheticField> syntheticFields, Set<SyntheticMethod> syntheticMethods) {
+    public ClassDefinition(String name, Set<SyntheticField> syntheticFields, Set<SyntheticMethod> syntheticMethods) {
         this.name = name;
-        this.injectInterfaces = injectInterfaces;
-        this.publicizedFields = publicizedFields;
-        this.publicizedMethods = publicizedMethods;
-        this.mutableFields = mutableFields;
         this.syntheticFields = syntheticFields;
         this.syntheticMethods = syntheticMethods;
     }
@@ -48,56 +38,12 @@ public class ClassDefinition {
         return name;
     }
 
-    public Set<String> getInjectInterfaces() {
-        return injectInterfaces;
-    }
-
-    public Set<SelfMember> getPublicizedFields() {
-        return publicizedFields;
-    }
-
-    public Set<SelfMember> getPublicizedMethods() {
-        return publicizedMethods;
-    }
-
-    public Set<SelfMember> getMutableFields() {
-        return mutableFields;
-    }
-
     public Set<SyntheticField> getSyntheticFields() {
         return syntheticFields;
     }
 
     public Set<SyntheticMethod> getSyntheticMethods() {
         return syntheticMethods;
-    }
-
-    public int getFieldAccess(int access, String name, String descriptor) {
-        SelfMember member = new SelfMember(name, descriptor);
-
-        if (publicizedFields.contains(member)) {
-            access |= Opcodes.ACC_PUBLIC;
-            access &= ~Opcodes.ACC_PRIVATE;
-            access &= ~Opcodes.ACC_PROTECTED;
-        }
-
-        if (mutableFields.contains(member)) {
-            access &= ~Opcodes.ACC_FINAL;
-        }
-
-        return access;
-    }
-
-    public int getMethodAccess(int access, String name, String descriptor) {
-        SelfMember member = new SelfMember(name, descriptor);
-
-        if (publicizedMethods.contains(member)) {
-            access |= Opcodes.ACC_PUBLIC;
-            access &= ~Opcodes.ACC_PRIVATE;
-            access &= ~Opcodes.ACC_PROTECTED;
-        }
-
-        return access;
     }
 
     public SyntheticField findSyntheticField(String name, String descriptor) {
@@ -154,27 +100,19 @@ public class ClassDefinition {
         if (o == null || getClass() != o.getClass()) return false;
         ClassDefinition that = (ClassDefinition) o;
         return Objects.equals(name, that.name) &&
-                Objects.equals(injectInterfaces, that.injectInterfaces) &&
-                Objects.equals(publicizedFields, that.publicizedFields) &&
-                Objects.equals(publicizedMethods, that.publicizedMethods) &&
-                Objects.equals(mutableFields, that.mutableFields) &&
                 Objects.equals(syntheticFields, that.syntheticFields) &&
                 Objects.equals(syntheticMethods, that.syntheticMethods);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, injectInterfaces, publicizedFields, publicizedMethods, mutableFields, syntheticFields, syntheticMethods);
+        return Objects.hash(name, syntheticFields, syntheticMethods);
     }
 
     @Override
     public String toString() {
         return "ClassDefinition{" +
                 "name='" + name + '\'' +
-                ", injectInterfaces=" + injectInterfaces +
-                ", publicizedFields=" + publicizedFields +
-                ", publicizedMethods=" + publicizedMethods +
-                ", mutableFields=" + mutableFields +
                 ", syntheticFields=" + syntheticFields +
                 ", syntheticMethods=" + syntheticMethods +
                 '}';

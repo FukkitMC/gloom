@@ -34,61 +34,17 @@ public abstract class AbstractEmitter implements Emitter {
             'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
             'y', 'z'};
 
-    protected final Map<Pair, String> accessorSets = new HashMap<>();
-    protected final Map<Pair, String> accessorGets = new HashMap<>();
-    protected final Map<Pair, String> accessorInvoker = new HashMap<>();
-    protected final Map<Pair, String> accessorStaticSets = new HashMap<>();
-    protected final Map<Pair, String> accessorStaticGets = new HashMap<>();
-    protected final Map<Pair, String> accessorStaticInvoker = new HashMap<>();
     protected final Map<SyntheticField, String> holderGets = new HashMap<>();
     protected final Map<SyntheticField, String> holderSets = new HashMap<>();
     protected final Map<SyntheticField, String> interfaceGets = new HashMap<>();
     protected final Map<SyntheticField, String> interfaceSets = new HashMap<>();
-    protected final Map<Pair, String> interfaceMutableSets = new HashMap<>();
 
     private final Random random = new Random("The loom is gloomier".hashCode());
 
-    private final Function<Pair, String> computeAS = random(accessorSets, "setInstance");
-    private final Function<Pair, String> computeAG = random(accessorGets, "getInstance");
-    private final Function<Pair, String> computeAI = random(accessorInvoker, "invokeInstance");
-    private final Function<Pair, String> computeASS = random(accessorStaticSets, "setStatic");
-    private final Function<Pair, String> computeASG = random(accessorStaticGets, "getStatic");
-    private final Function<Pair, String> computeASI = random(accessorStaticInvoker, "invokeStatic");
     private final Function<SyntheticField, String> computeHG = random(holderGets, "getStatic");
     private final Function<SyntheticField, String> computeHS = random(holderSets, "setStatic");
     private final Function<SyntheticField, String> computeIG = random(interfaceGets, "getSynthetic");
     private final Function<SyntheticField, String> computeIS = random(interfaceSets, "setSynthetic");
-    private final Function<Pair, String> computeMS = random(interfaceMutableSets, "setMutable");
-
-    @Override
-    public String generateAccessorSetStatic(String name, String descriptor) {
-        return accessorStaticSets.computeIfAbsent(new Pair(name, descriptor), computeASS);
-    }
-
-    @Override
-    public String generateAccessorSet(String name, String descriptor) {
-        return accessorSets.computeIfAbsent(new Pair(name, descriptor), computeAS);
-    }
-
-    @Override
-    public String generateAccessorGetStatic(String name, String descriptor) {
-        return accessorStaticGets.computeIfAbsent(new Pair(name, descriptor), computeASG);
-    }
-
-    @Override
-    public String generateAccessorGet(String name, String descriptor) {
-        return accessorGets.computeIfAbsent(new Pair(name, descriptor), computeAG);
-    }
-
-    @Override
-    public String generateAccessorInvokerStatic(String name, String descriptor) {
-        return accessorStaticInvoker.computeIfAbsent(new Pair(name, descriptor), computeASI);
-    }
-
-    @Override
-    public String generateAccessorInvoker(String name, String descriptor) {
-        return accessorInvoker.computeIfAbsent(new Pair(name, descriptor), computeAI);
-    }
 
     @Override
     public String generateHolderSyntheticSetAccessor(SyntheticField field) {
@@ -108,11 +64,6 @@ public abstract class AbstractEmitter implements Emitter {
     @Override
     public String generateInterfaceSyntheticGetAccessor(SyntheticField field) {
         return interfaceGets.computeIfAbsent(field, computeIG);
-    }
-
-    @Override
-    public String generateInterfaceMutableSet(String name, String descriptor) {
-        return interfaceMutableSets.computeIfAbsent(new Pair(name, descriptor), computeMS);
     }
 
     private <T> Function<T, String> random(Map<T, String> map, String prefix) {
@@ -137,13 +88,4 @@ public abstract class AbstractEmitter implements Emitter {
         return builder.toString();
     }
 
-    protected static class Pair {
-        public final String name;
-        public final String desc;
-
-        public Pair(String name, String desc) {
-            this.name = name;
-            this.desc = desc;
-        }
-    }
 }

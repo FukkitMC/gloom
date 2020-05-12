@@ -46,22 +46,14 @@ public class GloomDefinitions {
         if (existing == null) {
             definitions.add(definition);
         } else {
-            Set<String> iI = new HashSet<>(existing.getInjectInterfaces());
-            Set<SelfMember> pF = new HashSet<>(existing.getPublicizedFields());
-            Set<SelfMember> pM = new HashSet<>(existing.getPublicizedMethods());
-            Set<SelfMember> mF = new HashSet<>(existing.getMutableFields());
             Set<SyntheticField> sF = new HashSet<>(existing.getSyntheticFields());
             Set<SyntheticMethod> sM = new HashSet<>(existing.getSyntheticMethods());
 
-            iI.addAll(definition.getInjectInterfaces());
-            pF.addAll(definition.getPublicizedFields());
-            pM.addAll(definition.getPublicizedMethods());
-            mF.addAll(definition.getMutableFields());
             sF.addAll(definition.getSyntheticFields());
             sM.addAll(definition.getSyntheticMethods());
 
             definitions.remove(existing);
-            definitions.add(new ClassDefinition(definition.getName(), iI, pF, pM, mF, sF, sM));
+            definitions.add(new ClassDefinition(definition.getName(), sF, sM));
         }
 
         return new GloomDefinitions(definitions);

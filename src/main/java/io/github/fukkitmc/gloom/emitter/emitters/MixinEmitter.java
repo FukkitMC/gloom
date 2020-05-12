@@ -28,54 +28,13 @@ public class MixinEmitter extends AbstractEmitter {
     private final String name;
     private final String itf;
     private final String holder;
-    private final String accessor;
     private final String mixin;
 
-    public MixinEmitter(String name, String itf, String holder, String accessor, String mixin) {
+    public MixinEmitter(String name, String itf, String holder, String mixin) {
         this.name = name;
         this.itf = itf;
         this.holder = holder;
-        this.accessor = accessor;
         this.mixin = mixin;
-    }
-
-    private static void unimplemented(MethodVisitor method) {
-        method.visitTypeInsn(Opcodes.NEW, "java/lang/AssertionError");
-        method.visitInsn(Opcodes.DUP);
-        method.visitLdcInsn("Not implemented");
-        method.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/AssertionError", "<init>", "(Ljava/lang/String;)V", false);
-        method.visitInsn(Opcodes.ATHROW);
-    }
-
-    /**
-     * Maps the field name for mutable setter fields
-     *
-     * @param name       The field name
-     * @param descriptor The field descriptor
-     * @return The remapped field name
-     */
-    protected String getField(String name, String descriptor) {
-        return name;
-    }
-
-    /**
-     * Maps the field target for accessors
-     *
-     * @param field The field
-     * @return The remapped field name
-     */
-    protected String getFieldTarget(Pair field) {
-        return "L" + name + ";" + field.name + ":" + field.desc;
-    }
-
-    /**
-     * Maps the method target for invokers
-     *
-     * @param method The method
-     * @return The remapped method name
-     */
-    protected String getMethodTarget(Pair method) {
-        return "L" + name + ";" + method.name + method.desc;
     }
 
     @Override
@@ -88,25 +47,16 @@ public class MixinEmitter extends AbstractEmitter {
         return itf;
     }
 
-    @Override
-    public String getAccessor() {
-        return accessor;
-    }
-
     public String getMixin() {
         return mixin;
     }
 
     public boolean shouldEmitMixin() {
-        return interfaceGets.size() + interfaceSets.size() + interfaceMutableSets.size() > 0;
+        return interfaceGets.size() + interfaceSets.size() > 0;
     }
 
     public boolean shouldEmitInterface() {
-        return interfaceGets.size() + interfaceSets.size() + interfaceMutableSets.size() > 0;
-    }
-
-    public boolean shouldEmitAccessor() {
-        return accessorGets.size() + accessorSets.size() + accessorInvoker.size() + accessorStaticGets.size() + accessorStaticGets.size() + accessorStaticInvoker.size() > 0;
+        return interfaceGets.size() + interfaceSets.size() > 0;
     }
 
     public boolean shouldEmitHolder() {
@@ -162,30 +112,6 @@ public class MixinEmitter extends AbstractEmitter {
             method.visitEnd();
         });
 
-        interfaceMutableSets.forEach((f, name) -> {
-            String mapped = getField(f.name, f.desc);
-
-            {
-                FieldVisitor field = visitor.visitField(Opcodes.ACC_PRIVATE, mapped, f.desc, null, null);
-
-                field.visitAnnotation("Lorg/spongepowered/asm/mixin/Shadow;", true).visitEnd();
-                field.visitAnnotation("Lorg/spongepowered/asm/mixin/Mutable;", true).visitEnd();
-                field.visitAnnotation("Lorg/spongepowered/asm/mixin/Final;", true).visitEnd();
-
-                field.visitEnd();
-            }
-
-            {
-                MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC, name, "(" + f.desc + ")V", null, null);
-                method.visitCode();
-                method.visitVarInsn(Opcodes.ALOAD, 0);
-                method.visitVarInsn(Type.getType(f.desc).getOpcode(Opcodes.ILOAD), 1);
-                method.visitFieldInsn(Opcodes.PUTFIELD, mixin, mapped, f.desc);
-                method.visitInsn(Opcodes.RETURN);
-                method.visitEnd();
-            }
-        });
-
         fields.forEach(f -> {
             FieldVisitor field = visitor.visitField(Opcodes.ACC_PRIVATE, f.getName(), f.getType().getDescriptor(), null, null);
             field.visitEnd();
@@ -204,89 +130,6 @@ public class MixinEmitter extends AbstractEmitter {
 
         interfaceSets.forEach((field, name) -> {
             MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_ABSTRACT, name, "(" + field.getType().getDescriptor() + ")V", null, null);
-            method.visitEnd();
-        });
-
-        interfaceMutableSets.forEach((f, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_ABSTRACT, name, "(" + f.desc + ")V", null, null);
-            method.visitEnd();
-        });
-
-        visitor.visitEnd();
-    }
-
-    public void emitAccessor(ClassVisitor visitor) {
-        visitor.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_INTERFACE | Opcodes.ACC_ABSTRACT, accessor, null, "java/lang/Object", null);
-
-        {
-            AnnotationVisitor annotation = visitor.visitAnnotation("Lorg/spongepowered/asm/mixin/Mixin;", false);
-            AnnotationVisitor value = annotation.visitArray("value");
-            value.visit(null, Type.getObjectType(name));
-            value.visitEnd();
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-        }
-
-        accessorGets.forEach((field, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_ABSTRACT, name, "()" + field.desc, null, null);
-            AnnotationVisitor annotation = method.visitAnnotation("Lorg/spongepowered/asm/mixin/gen/Accessor;", true);
-            annotation.visit("value", getFieldTarget(field));
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-            method.visitEnd();
-        });
-
-        accessorSets.forEach((field, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_ABSTRACT, name, "(" + field.desc + ")V", null, null);
-            AnnotationVisitor annotation = method.visitAnnotation("Lorg/spongepowered/asm/mixin/gen/Accessor;", true);
-            annotation.visit("value", getFieldTarget(field));
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-            method.visitEnd();
-        });
-
-        accessorInvoker.forEach((m, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_ABSTRACT, name, m.desc, null, null);
-            AnnotationVisitor annotation = method.visitAnnotation("Lorg/spongepowered/asm/mixin/gen/Invoker;", true);
-            annotation.visit("value", getMethodTarget(m));
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-            method.visitEnd();
-        });
-
-        accessorStaticGets.forEach((field, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, "()" + field.desc, null, null);
-            AnnotationVisitor annotation = method.visitAnnotation("Lorg/spongepowered/asm/mixin/gen/Accessor;", true);
-            annotation.visit("value", getFieldTarget(field));
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-            method.visitCode();
-            unimplemented(method);
-            method.visitMaxs(3, 0);
-            method.visitEnd();
-        });
-
-        accessorStaticSets.forEach((field, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, "(" + field.desc + ")V", null, null);
-            AnnotationVisitor annotation = method.visitAnnotation("Lorg/spongepowered/asm/mixin/gen/Accessor;", true);
-            annotation.visit("value", getFieldTarget(field));
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-            method.visitCode();
-            unimplemented(method);
-            method.visitMaxs(3, 1);
-            method.visitEnd();
-        });
-
-        accessorStaticInvoker.forEach((m, name) -> {
-            MethodVisitor method = visitor.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, m.desc, null, null);
-            AnnotationVisitor annotation = method.visitAnnotation("Lorg/spongepowered/asm/mixin/gen/Invoker;", true);
-            annotation.visit("value", getMethodTarget(m));
-            annotation.visit("remap", false);
-            annotation.visitEnd();
-            method.visitCode();
-            unimplemented(method);
-            method.visitMaxs(3, Type.getArgumentTypes(m.desc).length);
             method.visitEnd();
         });
 

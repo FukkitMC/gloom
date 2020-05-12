@@ -19,8 +19,6 @@
  * reapplied using <a href="https://github.com/SpongePowered/Mixin">Mixin</a> using
  * a {@link io.github.fukkitmc.gloom.emitter.emitters.MixinEmitter}
  *
- * <p>Gloom allows making fields public and non-final
- * <p>Gloom allows making methods public
  * <p>Gloom allows the creation of synthetic fields, which can be transformed to be held elsewhere
  * <p>Gloom allows the creation of methods which redirect elsewhere
  */

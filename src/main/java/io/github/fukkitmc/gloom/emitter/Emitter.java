@@ -35,53 +35,6 @@ public interface Emitter {
     String getInterface();
 
     /**
-     * @return The accessor's internal name
-     */
-    String getAccessor();
-
-    /**
-     * @param name       Field name
-     * @param descriptor Field descriptor
-     * @return Accessor method name
-     */
-    String generateAccessorSetStatic(String name, String descriptor);
-
-    /**
-     * @param name       Field name
-     * @param descriptor Field descriptor
-     * @return Accessor method name
-     */
-    String generateAccessorSet(String name, String descriptor);
-
-    /**
-     * @param name       Field name
-     * @param descriptor Field descriptor
-     * @return Accessor method name
-     */
-    String generateAccessorGetStatic(String name, String descriptor);
-
-    /**
-     * @param name       Field name
-     * @param descriptor Field descriptor
-     * @return Accessor method name
-     */
-    String generateAccessorGet(String name, String descriptor);
-
-    /**
-     * @param name       Method name
-     * @param descriptor Method descriptor
-     * @return Accessor method name
-     */
-    String generateAccessorInvokerStatic(String name, String descriptor);
-
-    /**
-     * @param name       Method name
-     * @param descriptor Method descriptor
-     * @return Accessor method name
-     */
-    String generateAccessorInvoker(String name, String descriptor);
-
-    /**
      * @param field Field
      * @return Holder setter method name
      */
@@ -104,11 +57,4 @@ public interface Emitter {
      * @return Holder getter method name
      */
     String generateInterfaceSyntheticGetAccessor(SyntheticField field);
-
-    /**
-     * @param name       Field name
-     * @param descriptor Field descriptor
-     * @return Mutable setter name
-     */
-    String generateInterfaceMutableSet(String name, String descriptor);
 }

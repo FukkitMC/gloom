@@ -35,7 +35,6 @@ public class DefinitionSerializer {
             .registerTypeAdapter(ClassDefinition.class, new ClassDefinitionInstanceCreator())
             .registerTypeAdapter(SyntheticField.class, new SyntheticFieldInstanceCreator())
             .registerTypeAdapter(SyntheticMethod.class, new SyntheticMethodInstanceCreator())
-            .registerTypeAdapter(SelfMember.class, new SelfMemberDeserializer())
             .setPrettyPrinting()
             .create();
     private static final java.lang.reflect.Type CLASS_SET = new TypeToken<Set<ClassDefinition>>() {
@@ -64,7 +63,7 @@ public class DefinitionSerializer {
     private static class ClassDefinitionInstanceCreator implements InstanceCreator<ClassDefinition> {
         @Override
         public ClassDefinition createInstance(java.lang.reflect.Type type) {
-            return new ClassDefinition(null, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
+            return new ClassDefinition(null, new HashSet<>(), new HashSet<>());
         }
     }
 
@@ -79,33 +78,6 @@ public class DefinitionSerializer {
         @Override
         public SyntheticMethod createInstance(java.lang.reflect.Type type) {
             return new SyntheticMethod(Opcodes.INVOKESTATIC, Opcodes.ACC_PUBLIC, null, null, null, null);
-        }
-    }
-
-    private static class SelfMemberDeserializer implements JsonDeserializer<SelfMember> {
-        @Override
-        public SelfMember deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            if (json.isJsonPrimitive()) {
-                String string = json.getAsString();
-
-                if (string.contains(":")) {
-                    String[] parts = string.split(":");
-                    return new SelfMember(parts[0], parts[1]);
-                } else if (string.contains("(")) {
-                    int index = string.indexOf('(');
-                    return new SelfMember(string.substring(0, index), string.substring(index));
-                }
-
-                throw new JsonParseException("Unknown descriptor");
-            } else if (json.isJsonArray()) {
-                JsonArray array = json.getAsJsonArray();
-                return new SelfMember(array.get(0).getAsString(), array.get(1).getAsString());
-            } else if (json.isJsonObject()) {
-                JsonObject object = json.getAsJsonObject();
-                return new SelfMember(object.getAsJsonPrimitive("name").getAsString(), object.getAsJsonPrimitive("descriptor").getAsString());
-            }
-
-            throw new JsonParseException("Unknown element");
         }
     }
 }

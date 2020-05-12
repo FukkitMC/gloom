@@ -31,6 +31,6 @@ public class IlluminateClassVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        return new IlluminateAccessVisitor(new IlluminateSyntheticVisitor(super.visitMethod(access, name, descriptor, signature, exceptions), illuminate), illuminate);
+        return new IlluminateSyntheticVisitor(super.visitMethod(access, name, descriptor, signature, exceptions), illuminate);
     }
 }
