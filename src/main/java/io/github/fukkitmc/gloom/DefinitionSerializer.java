@@ -63,7 +63,7 @@ public class DefinitionSerializer {
     private static class ClassDefinitionInstanceCreator implements InstanceCreator<ClassDefinition> {
         @Override
         public ClassDefinition createInstance(java.lang.reflect.Type type) {
-            return new ClassDefinition(null, new HashSet<>(), new HashSet<>());
+            return new ClassDefinition(null, new HashSet<>(), new HashSet<>(), new HashSet<>());
         }
     }
 

@@ -25,17 +25,23 @@ import java.util.Set;
 public class ClassDefinition {
 
     private final String name;
+    private final Set<String> injectInterfaces;
     private final Set<SyntheticField> syntheticFields;
     private final Set<SyntheticMethod> syntheticMethods;
 
-    public ClassDefinition(String name, Set<SyntheticField> syntheticFields, Set<SyntheticMethod> syntheticMethods) {
+    public ClassDefinition(String name, Set<String> injectInterfaces, Set<SyntheticField> syntheticFields, Set<SyntheticMethod> syntheticMethods) {
         this.name = name;
+        this.injectInterfaces = injectInterfaces;
         this.syntheticFields = syntheticFields;
         this.syntheticMethods = syntheticMethods;
     }
 
     public String getName() {
         return name;
+    }
+
+    public Set<String> getInjectInterfaces() {
+        return injectInterfaces;
     }
 
     public Set<SyntheticField> getSyntheticFields() {

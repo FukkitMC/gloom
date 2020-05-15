@@ -22,6 +22,10 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Stream;
+
 /**
  * Injects {@link GloomDefinitions definitions} into classes
  */
@@ -38,6 +42,31 @@ public class GloomInjector extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         definition = definitions.get(name);
+
+        if (definition != null) {
+            Set<String> inject = definition.getInjectInterfaces();
+
+            if (!inject.isEmpty()) {
+                String[] i = inject.toArray(new String[0]);
+
+                if (interfaces == null) {
+                    interfaces = i;
+                } else {
+                    interfaces = Stream.concat(Arrays.stream(interfaces), Arrays.stream(i)).toArray(String[]::new);
+                }
+
+                if (signature != null) {
+                    StringBuilder builder = new StringBuilder(signature);
+
+                    for (String itf : i) {
+                        builder.append("L").append(itf).append(";");
+                    }
+
+                    signature = builder.toString();
+                }
+            }
+        }
+
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
