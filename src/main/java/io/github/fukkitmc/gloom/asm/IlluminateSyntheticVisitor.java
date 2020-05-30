@@ -66,9 +66,9 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
             String itf = emitter.getInterface();
 
             if (isPut) {
-                super.visitMethodInsn(Opcodes.INVOKEINTERFACE, itf, emitter.generateHolderSyntheticSetAccessor(field), Type.getMethodDescriptor(Type.VOID_TYPE, field.getType()), true);
+                super.visitMethodInsn(Opcodes.INVOKEINTERFACE, itf, emitter.generateInterfaceSyntheticSetAccessor(field), Type.getMethodDescriptor(Type.VOID_TYPE, field.getType()), true);
             } else {
-                super.visitMethodInsn(Opcodes.INVOKEINTERFACE, itf, emitter.generateHolderSyntheticGetAccessor(field), Type.getMethodDescriptor(field.getType()), true);
+                super.visitMethodInsn(Opcodes.INVOKEINTERFACE, itf, emitter.generateInterfaceSyntheticGetAccessor(field), Type.getMethodDescriptor(field.getType()), true);
             }
         }
     }
