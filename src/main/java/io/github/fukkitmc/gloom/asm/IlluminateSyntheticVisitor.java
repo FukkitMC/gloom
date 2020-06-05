@@ -50,7 +50,7 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
             return;
         }
 
-        Emitter emitter = illuminate.provider.forClass(owner);
+        Emitter emitter = illuminate.provider.forClass(definition.getName());
         boolean isStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC;
         boolean isPut = opcode == Opcodes.PUTSTATIC || opcode == Opcodes.PUTFIELD;
 
@@ -100,7 +100,7 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
             SyntheticField field = definition.findSyntheticSetter(name, descriptor);
 
             if (field != null) {
-                Emitter emitter = illuminate.provider.forClass(owner);
+                Emitter emitter = illuminate.provider.forClass(definition.getName());
 
                 if (isStatic) {
                     super.visitMethodInsn(Opcodes.INVOKESTATIC, emitter.getHolder(), emitter.generateHolderSyntheticSetAccessor(field), descriptor, false);
@@ -114,7 +114,7 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
             SyntheticField field = definition.findSyntheticGetter(name, descriptor);
 
             if (field != null) {
-                Emitter emitter = illuminate.provider.forClass(owner);
+                Emitter emitter = illuminate.provider.forClass(definition.getName());
 
                 if (isStatic) {
                     super.visitMethodInsn(Opcodes.INVOKESTATIC, emitter.getHolder(), emitter.generateHolderSyntheticGetAccessor(field), descriptor, false);
