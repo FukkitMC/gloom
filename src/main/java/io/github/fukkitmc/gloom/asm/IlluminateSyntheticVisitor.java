@@ -36,7 +36,7 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
 
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-        ClassDefinition definition = illuminate.definitions.get(owner);
+        ClassDefinition definition = illuminate.definitions.get(illuminate.inheritance.resolveFieldOwner(owner, name, descriptor));
 
         if (definition == null) {
             super.visitFieldInsn(opcode, owner, name, descriptor);
@@ -75,7 +75,7 @@ class IlluminateSyntheticVisitor extends MethodVisitor {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-        ClassDefinition definition = illuminate.definitions.get(owner);
+        ClassDefinition definition = illuminate.definitions.get(illuminate.inheritance.resolveMethodOwner(owner, name, descriptor));
 
         if (definition == null) {
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);

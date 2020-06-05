@@ -18,7 +18,10 @@ package io.github.fukkitmc.gloom;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import io.github.fukkitmc.gloom.definitions.*;
+import io.github.fukkitmc.gloom.definitions.ClassDefinition;
+import io.github.fukkitmc.gloom.definitions.GloomDefinitions;
+import io.github.fukkitmc.gloom.definitions.SyntheticField;
+import io.github.fukkitmc.gloom.definitions.SyntheticMethod;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 

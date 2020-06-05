@@ -26,12 +26,26 @@ import org.objectweb.asm.ClassVisitor;
  */
 public class Illuminate {
 
+    private static final InheritanceProvider DEFAULT = new InheritanceProvider() {
+        @Override
+        public String resolveFieldOwner(String owner, String name, String descriptor) {
+            return owner;
+        }
+
+        @Override
+        public String resolveMethodOwner(String owner, String name, String descriptor) {
+            return owner;
+        }
+    };
+
     final GloomDefinitions definitions;
     final EmitterProvider<?> provider;
+    final InheritanceProvider inheritance;
 
-    public Illuminate(GloomDefinitions definitions, EmitterProvider<?> provider) {
+    public Illuminate(GloomDefinitions definitions, EmitterProvider<?> provider, InheritanceProvider inheritance) {
         this.definitions = definitions;
         this.provider = provider;
+        this.inheritance = inheritance == null ? DEFAULT : inheritance;
     }
 
     public ClassVisitor createVisitor(ClassVisitor visitor) {
